@@ -1,0 +1,4 @@
+.venv/
+COMPARISON.md
+*.log
+__pycache__/

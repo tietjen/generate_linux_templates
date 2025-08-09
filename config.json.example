@@ -1,0 +1,5 @@
+{
+    "ssh_keyfile": "/root/id_rsa.pub",
+    "username": "admin",
+    "storage": "local-zfs"
+}
