@@ -239,38 +239,22 @@ class ProxmoxTemplateGenerator:
         Returns:
             Dictionary mapping image names to their configuration
         """
-        return {
-            "debian-12": {
-                "url": "https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2",
-                "filename": "debian-12-genericcloud-amd64.qcow2",
-                "vm_id": 902,
-                "vm_name": "temp-debian-12"
-            },
-            "debian-13": {
-                "url": "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-amd64.qcow2",
-                "filename": "debian-13-genericcloud-amd64.qcow2",
-                "vm_id": 903,
-                "vm_name": "temp-debian-13"
-            },
-            "ubuntu-24.04": {
-                "url": "https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img",
-                "filename": "ubuntu-24.04-server-cloudimg-amd64.img",
-                "vm_id": 912,
-                "vm_name": "temp-ubuntu-24-04"
-            },
-            "fedora-42": {
-                "url": "https://mirrors.n-ix.net/fedora/linux/releases/42/Cloud/x86_64/images/Fedora-Cloud-Base-Generic-42-1.1.x86_64.qcow2",
-                "filename": "Fedora-Cloud-Base-Generic-42-1.1.x86_64.qcow2",
-                "vm_id": 942,
-                "vm_name": "temp-fedora-42"
-            },
-            "alpine-3.22": {
-                "url": "https://dl-cdn.alpinelinux.org/alpine/v3.22/releases/cloud/generic_alpine-3.22.0-x86_64-bios-cloudinit-r0.qcow2",
-                "filename": "generic_alpine-3.22.0-x86_64-bios-cloudinit-r0.qcow2",
-                "vm_id": 940,
-                "vm_name": "temp-alpine-3.22"
-            }
-        }
+        templates_file = "templates.json"
+        
+        try:
+            with open(templates_file, 'r') as f:
+                templates = json.load(f)
+                self.logger.debug(f"Loaded {len(templates)} templates from {templates_file}")
+                return templates
+        except FileNotFoundError:
+            self.logger.error(f"Templates file {templates_file} not found")
+            return {}
+        except json.JSONDecodeError as e:
+            self.logger.error(f"Invalid JSON in {templates_file}: {e}")
+            return {}
+        except Exception as e:
+            self.logger.error(f"Error loading templates from {templates_file}: {e}")
+            return {}
         
     def process_image(self, image_name: str) -> bool:
         """
@@ -425,9 +409,17 @@ Examples:
     # List available images
     if args.list:
         images = generator.get_available_images()
+        if not images:
+            print("No templates found. Please ensure templates.json exists and is valid.")
+            sys.exit(1)
+        
         print("Available images:")
         for name, config in images.items():
+            description = config.get('description', 'No description available')
             print(f"  {name}: {config['vm_name']} (ID: {config['vm_id']})")
+            print(f"    Description: {description}")
+            print(f"    URL: {config['url']}")
+            print()
         return
         
     # Validate environment

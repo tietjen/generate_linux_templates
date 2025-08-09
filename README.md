@@ -48,6 +48,28 @@ Create a JSON configuration file (e.g., `config.json`):
 }
 ```
 
+### Template Configuration
+
+Templates are defined in `templates.json`. Each template includes:
+- `url`: Download URL for the cloud image
+- `filename`: Local filename for the downloaded image
+- `vm_id`: Proxmox VE VM ID for the template
+- `vm_name`: Template name in Proxmox VE
+- `description`: Human-readable description
+
+Example template entry:
+```json
+{
+    "debian-12": {
+        "url": "https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2",
+        "filename": "debian-12-genericcloud-amd64.qcow2",
+        "vm_id": 902,
+        "vm_name": "temp-debian-12",
+        "description": "Debian 12 (Bookworm) - Stable"
+    }
+}
+```
+
 ## Usage
 
 ### List Available Images
@@ -178,7 +200,7 @@ logging.basicConfig(level=logging.DEBUG, ...)
 
 To add new images or modify configurations:
 
-1. Update the `get_available_images()` method
+1. Add new template entries to `templates.json`
 2. Test with `--validate` flag
 3. Test with single image processing
 4. Update documentation

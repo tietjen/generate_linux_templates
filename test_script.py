@@ -27,6 +27,44 @@ def test_config_loading():
     return True
 
 
+def test_templates_file():
+    """Test templates.json file existence and validity."""
+    print("Testing templates.json file...")
+    
+    import json
+    
+    if not os.path.exists('templates.json'):
+        print("❌ templates.json file not found")
+        return False
+    
+    try:
+        with open('templates.json', 'r') as f:
+            templates = json.load(f)
+        
+        if not templates:
+            print("❌ templates.json is empty")
+            return False
+        
+        # Check for required keys in first template
+        first_template = list(templates.values())[0]
+        required_keys = ['url', 'filename', 'vm_id', 'vm_name']
+        
+        for key in required_keys:
+            if key not in first_template:
+                print(f"❌ Missing required key in template: {key}")
+                return False
+        
+        print("✅ templates.json file is valid")
+        return True
+        
+    except json.JSONDecodeError as e:
+        print(f"❌ Invalid JSON in templates.json: {e}")
+        return False
+    except Exception as e:
+        print(f"❌ Error reading templates.json: {e}")
+        return False
+
+
 def test_image_listing():
     """Test image listing functionality."""
     print("Testing image listing...")
@@ -34,6 +72,10 @@ def test_image_listing():
     config = load_config()
     generator = ProxmoxTemplateGenerator(config)
     images = generator.get_available_images()
+    
+    if not images:
+        print("❌ No templates loaded - check if templates.json exists")
+        return False
     
     expected_images = ['debian-12', 'debian-13', 'ubuntu-24.04', 'fedora-42', 'alpine-3.22']
     
@@ -94,6 +136,7 @@ def main():
     
     tests = [
         test_config_loading,
+        test_templates_file,
         test_image_listing,
         test_environment_validation,
         test_command_execution
