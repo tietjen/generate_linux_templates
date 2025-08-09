@@ -208,3 +208,5 @@ To add new images or modify configurations:
 ## License
 
 This script is provided as-is for educational and operational purposes. Ensure compliance with Proxmox VE licensing and cloud image distribution terms.
+
+## Based on the bash script version from apalrd's adventures [website](https://www.apalrd.net/posts/2023/pve_cloud/)
